@@ -8,7 +8,7 @@ print(tf.__version__)
 def main():
     # 配置信息
     # 数据信息
-    dataset = 'FireNet_dataset'
+    dataset = 'ForestFire_dataset'
     img_height = 64
     img_width = 64
     classes = 2
@@ -17,8 +17,8 @@ def main():
     epochs = 100
     binary_class = False
     # 文件保存地址信息
-    saveh5 = 'FireNet_v1_on_FireNet.h5'
-    output_figure_dir = 'FireNet_dataset_output_figure'
+    saveh5 = 'FireNet_v1_on_ForestFire.h5'
+    output_figure_dir = 'ForestFire_dataset_output_figure'
     loss_fig_name = 'train_FireNet_v1_loss.jpg'
     accuracy_fig_name = 'train_FireNet_v1_accuracy.jpg'
     # 模型信息
@@ -26,9 +26,9 @@ def main():
     
     # 构造数据集路径
     data_root = os.getcwd()
-    # data_root = os.path.abspath(os.path.join(os.getcwd(), '..')) 
-    image_path = os.path.join(data_root, "Dataset", dataset) 
-    train_data_path = os.path.join(image_path, "train") 
+    # data_root = os.path.abspath(os.path.join(os.getcwd(), '..'))  
+    image_path = os.path.join(data_root, 'Dataset', dataset) 
+    train_data_path = os.path.join(image_path, 'train') 
 
     # 创建save_weights文件夹
     if not os.path.exists("save_weights"):  
@@ -36,7 +36,7 @@ def main():
 
     # 构造用于training和validation的Dataset对象
     train_ds = tf.keras.utils.image_dataset_from_directory(train_data_path,
-                                                           label_mode='int',
+                                                           label_mode="int",
                                                            validation_split=0.1, 
                                                            subset="training", 
                                                            seed=123,
@@ -44,7 +44,7 @@ def main():
                                                            batch_size=batch_size)
     
     val_ds = tf.keras.utils.image_dataset_from_directory(train_data_path, 
-                                                         label_mode='int',
+                                                         label_mode="int",
                                                          validation_split=0.1, 
                                                          subset="validation", 
                                                          seed=123,
@@ -82,7 +82,7 @@ def main():
     else:
          num_classes = classes
 
-    model = FireNet_v1(img_height=img_height, img_width=img_width, num_classes=num_classes)
+    model = selectedmodel(img_height=img_height, img_width=img_width, num_classes=num_classes)
 
     # model.build((batch_size, 224, 224, 3))  # when using subclass model
     model.summary()
@@ -90,7 +90,7 @@ def main():
     callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+saveh5,
                                                      save_best_only=True,
                                                      save_weights_only=True,
-                                                     monitor='val_loss')]
+                                                     monitor="val_loss")]
     
     history = model.fit(x=train_ds,
                         epochs=epochs,
