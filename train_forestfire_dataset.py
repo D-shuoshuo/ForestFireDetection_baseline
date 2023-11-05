@@ -4,26 +4,28 @@ import tensorflow as tf
 import os
 
 print(tf.__version__)
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
+# 配置信息
+# 数据信息
+dataset = 'ForestFire_dataset'
+img_height = 96
+img_width = 96
+classes = 2
+# 训练信息
+batch_size = 32
+epochs = 100
+binary_class = False
+# 文件保存地址信息
+saveh5 = 'FireNet_v1_on_ForestFire.h5' # 模型修改
+output_figure_dir = 'ForestFire_dataset_output_figure'
+loss_fig_name = 'train_FireNet_v1_loss.jpg' # 模型修改
+accuracy_fig_name = 'train_FireNet_v1_accuracy.jpg' # 模型修改
+# 模型信息
+selectedmodel = FireNet_v1 # 模型修改
+    
 
 def main():
-    # 配置信息
-    # 数据信息
-    dataset = 'ForestFire_dataset'
-    img_height = 96
-    img_width = 96
-    classes = 2
-    # 训练信息
-    batch_size = 32
-    epochs = 100
-    binary_class = False
-    # 文件保存地址信息
-    saveh5 = 'ConvNet_on_ForestFire.h5'
-    output_figure_dir = 'ForestFire_dataset_output_figure'
-    loss_fig_name = 'train_ConvNet_loss.jpg'
-    accuracy_fig_name = 'train_ConvNet_accuracy.jpg'
-    # 模型信息
-    selectedmodel = ConvNet
-    
     # 构造数据集路径
     data_root = os.getcwd()
     # data_root = os.path.abspath(os.path.join(os.getcwd(), '..'))  
@@ -39,7 +41,7 @@ def main():
                                                            label_mode="int",
                                                            validation_split=0.1, 
                                                            subset="training", 
-                                                           seed=120,
+                                                           seed=124,
                                                            image_size=(img_height, img_width),
                                                            batch_size=batch_size)
     
@@ -47,7 +49,7 @@ def main():
                                                          label_mode="int",
                                                          validation_split=0.1, 
                                                          subset="validation", 
-                                                         seed=120,
+                                                         seed=124,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
@@ -62,13 +64,13 @@ def main():
             print(labels_batch.shape)
             break
     
-    plt.figure(figsize=(10, 10))
-    for images, labels in train_ds.take(1):
-        for i in range(9):
-            ax = plt.subplot(3, 3, i + 1)
-            plt.imshow(images[i].numpy().astype("uint8"))
-            plt.title(class_names[labels[i]])
-    plt.savefig("sample_fig.jpg")
+    # plt.figure(figsize=(10, 10))
+    # for images, labels in train_ds.take(1):
+    #     for i in range(9):
+    #         ax = plt.subplot(3, 3, i + 1)
+    #         plt.imshow(images[i].numpy().astype("uint8"))
+    #         plt.title(class_names[labels[i]])
+    # plt.savefig("sample_fig.jpg")
 
     # # 配置数据集以提高性能
     # AUTOTUNE = tf.data.AUTOTUNE
@@ -81,14 +83,17 @@ def main():
     else:
          num_classes = classes
 
-    model = selectedmodel(img_height=img_height, img_width=img_width, num_classes=num_classes)
+    model = selectedmodel(img_height=img_height, 
+                          img_width=img_width, 
+                          num_classes=num_classes,
+                          steps_per_epoch=num_batches)
 
     # model.build((batch_size, 224, 224, 3))  # when using subclass model
     model.summary()
 
     callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+saveh5,
                                                      save_best_only=True,
-                                                     save_weights_only=True,
+                                                     save_weights_only=False,
                                                      monitor="val_loss")]
     
     history = model.fit(x=train_ds,

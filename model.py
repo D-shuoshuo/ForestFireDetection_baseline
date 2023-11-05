@@ -1,50 +1,65 @@
 import tensorflow as tf
 
-def ConvNet(img_height=96, img_width=96, num_classes=2):
+
+# ConvNet模型
+def ConvNet(img_height=96, img_width=96, num_classes=2, steps_per_epoch=100):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
-        tf.keras.layers.Conv2D(4, 3, strides=(2, 2), activation='relu',),
+        # tf.keras.layers.Rescaling(1./127.5, offset=-1, input_shape=(img_height, img_width, 3)),
+        tf.keras.layers.Conv2D(4, 3, strides=(2, 2), activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2)),
         tf.keras.layers.Flatten(),
         tf.keras.layers.Dropout(0.2),
         tf.keras.layers.Dense(num_classes)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(0.001, 
+                                                                 decay_steps=steps_per_epoch*10, 
+                                                                 decay_rate=1, 
+                                                                 staircase=False)
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=["accuracy"])
     
     return model
 
 
-def FireNet_v1(img_height=64, img_width=64, num_classes=2):
+# FireNet_v1模型
+def FireNet_v1(img_height=64, img_width=64, num_classes=2, steps_per_epoch=100):
     # NHWC
     model = tf.keras.models.Sequential([
         tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
-        tf.keras.layers.Conv2D(16, 3, activation='relu',),
+        tf.keras.layers.Conv2D(16, 3, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.AveragePooling2D(),
         tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Conv2D(32, 3, activation='relu',),
+        tf.keras.layers.Conv2D(32, 3, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.AveragePooling2D(),
         tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Conv2D(64, 3, activation='relu',),
+        tf.keras.layers.Conv2D(64, 3, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.AveragePooling2D(),
         tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dense(256, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.Dense(num_classes)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+    lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(0.00051, 
+                                                                 decay_steps=steps_per_epoch*1000, 
+                                                                 decay_rate=1, 
+                                                                 staircase=False)
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=["accuracy"])
     
     return model
 
 
-def FireNet_v2(img_height=64, img_width=64, num_classes=2):
+# FireNet_v2模型
+def FireNet_v2(img_height=64, img_width=64, num_classes=2, steps_per_epoch=96):
     # NHWC
     model = tf.keras.models.Sequential([
         tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
@@ -64,13 +79,18 @@ def FireNet_v2(img_height=64, img_width=64, num_classes=2):
         tf.keras.layers.Dense(num_classes, activation='softmax')
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
+    lr_schedule = tf.keras.optimizers.schedules.InverseTimeDecay(0.001, 
+                                                                 decay_steps=steps_per_epoch*1000, 
+                                                                 decay_rate=1, 
+                                                                 staircase=False)
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(lr_schedule),
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=["accuracy"])
 
     return model
 
-
+# Alexnet模型
 def AlexNet_v1(img_height=224, img_width=224, num_classes=1000):
     # tensorflow中的tensor通道排序是NHWC
     input_image = tf.keras.layers.Input(shape=(img_height, img_width, 3), dtype="float32")  # output(None, 224, 224, 3)

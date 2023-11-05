@@ -4,26 +4,28 @@ import tensorflow as tf
 import os
 
 print(tf.__version__)
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+
+# 配置信息
+# 数据信息
+dataset = 'FireNet_dataset'
+img_height = 64
+img_width = 64
+classes = 2
+# 训练信息
+batch_size = 32
+epochs = 100
+binary_class = False
+# 文件保存地址信息
+saveh5 = 'ConvNet_on_FireNet.h5' # 模型修改
+output_figure_dir = 'FireNet_dataset_output_figure'
+loss_fig_name = 'train_ConvNet_loss.jpg' # 模型修改
+accuracy_fig_name = 'train_ConvNet_accuracy.jpg' # 模型修改
+# 模型信息
+selectedmodel = ConvNet # 模型修改
+
 
 def main():
-    # 配置信息
-    # 数据信息
-    dataset = 'FireNet_dataset'
-    img_height = 64
-    img_width = 64
-    classes = 2
-    # 训练信息
-    batch_size = 32
-    epochs = 100
-    binary_class = False
-    # 文件保存地址信息
-    saveh5 = 'ConvNet_on_FireNet.h5'
-    output_figure_dir = 'FireNet_dataset_output_figure'
-    loss_fig_name = 'train_ConvNet_loss.jpg'
-    accuracy_fig_name = 'train_ConvNet_accuracy.jpg'
-    # 模型信息
-    selectedmodel = ConvNet
-    
     # 构造数据集路径
     data_root = os.getcwd()
     # data_root = os.path.abspath(os.path.join(os.getcwd(), '..')) 
@@ -82,7 +84,10 @@ def main():
     else:
          num_classes = classes
 
-    model = selectedmodel(img_height=img_height, img_width=img_width, num_classes=num_classes)
+    model = selectedmodel(img_height=img_height, 
+                          img_width=img_width, 
+                          num_classes=num_classes, 
+                          steps_per_epoch=num_batches)
 
     # model.build((batch_size, 224, 224, 3))  # when using subclass model
     model.summary()
