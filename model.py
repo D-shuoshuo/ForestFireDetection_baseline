@@ -1,5 +1,22 @@
 import tensorflow as tf
 
+def ConvNet(img_height=96, img_width=96, num_classes=2):
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Rescaling(1./255, input_shape=(img_height, img_width, 3)),
+        tf.keras.layers.Conv2D(4, 3, strides=(2, 2), activation='relu',),
+        tf.keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(num_classes)
+    ])
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  metrics=["accuracy"])
+    
+    return model
+
+
 def FireNet_v1(img_height=64, img_width=64, num_classes=2):
     # NHWC
     model = tf.keras.models.Sequential([
@@ -20,11 +37,12 @@ def FireNet_v1(img_height=64, img_width=64, num_classes=2):
         tf.keras.layers.Dense(num_classes)
     ])
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=["accuracy"])
     
     return model
+
 
 def FireNet_v2(img_height=64, img_width=64, num_classes=2):
     # NHWC
@@ -52,30 +70,35 @@ def FireNet_v2(img_height=64, img_width=64, num_classes=2):
 
     return model
 
-# def AlexNet_v1(img_height=224, img_width=224, num_classes=1000):
-#     # tensorflow中的tensor通道排序是NHWC
-#     input_image = tf.keras.layers.Input(shape=(img_height, img_width, 3), dtype="float32")  # output(None, 224, 224, 3)
-#     x = tf.keras.layers.ZeroPadding2D(((1, 2), (1, 2)))(input_image)                      # output(None, 227, 227, 3)
-#     x = tf.keras.layers.Conv2D(48, kernel_size=11, strides=4, activation="relu")(x)       # output(None, 55, 55, 48)
-#     x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 27, 27, 48)
-#     x = tf.keras.layers.Conv2D(128, kernel_size=5, padding="same", activation="relu")(x)  # output(None, 27, 27, 128)
-#     x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 13, 13, 128)
-#     x = tf.keras.layers.Conv2D(192, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 192)
-#     x = tf.keras.layers.Conv2D(192, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 192)
-#     x = tf.keras.layers.Conv2D(128, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 128)
-#     x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 6, 6, 128)
 
-#     x = tf.keras.layers.Flatten()(x)                         # output(None, 6*6*128)
-#     x = tf.keras.layers.Dropout(0.2)(x)
-#     x = tf.keras.layers.Dense(2048, activation="relu")(x)    # output(None, 2048)
-#     x = tf.keras.layers.Dropout(0.2)(x)
-#     x = tf.keras.layers.Dense(2048, activation="relu")(x)    # output(None, 2048)
-#     x = tf.keras.layers.Dense(num_classes)(x)                  # output(None, 5)
-#     predict = tf.keras.layers.Softmax()(x)
+def AlexNet_v1(img_height=224, img_width=224, num_classes=1000):
+    # tensorflow中的tensor通道排序是NHWC
+    input_image = tf.keras.layers.Input(shape=(img_height, img_width, 3), dtype="float32")  # output(None, 224, 224, 3)
+    x = tf.keras.layers.ZeroPadding2D(((1, 2), (1, 2)))(input_image)                      # output(None, 227, 227, 3)
+    x = tf.keras.layers.Conv2D(48, kernel_size=11, strides=4, activation="relu")(x)       # output(None, 55, 55, 48)
+    x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 27, 27, 48)
+    x = tf.keras.layers.Conv2D(128, kernel_size=5, padding="same", activation="relu")(x)  # output(None, 27, 27, 128)
+    x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 13, 13, 128)
+    x = tf.keras.layers.Conv2D(192, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 192)
+    x = tf.keras.layers.Conv2D(192, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 192)
+    x = tf.keras.layers.Conv2D(128, kernel_size=3, padding="same", activation="relu")(x)  # output(None, 13, 13, 128)
+    x = tf.keras.layers.MaxPool2D(pool_size=3, strides=2)(x)                              # output(None, 6, 6, 128)
 
-#     model = tf.keras.models.Model(inputs=input_image, outputs=predict)
+    x = tf.keras.layers.Flatten()(x)                         # output(None, 6*6*128)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = tf.keras.layers.Dense(2048, activation="relu")(x)    # output(None, 2048)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    x = tf.keras.layers.Dense(2048, activation="relu")(x)    # output(None, 2048)
+    x = tf.keras.layers.Dense(num_classes)(x)                  # output(None, 5)
+    predict = tf.keras.layers.Softmax()(x)
 
-#     return model
+    model = tf.keras.models.Model(inputs=input_image, outputs=predict)
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0005),
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+                  metrics=["accuracy"])
+
+    return model
 
 
 # class AlexNet_v2(Model):

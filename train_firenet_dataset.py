@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from model import FireNet_v1, FireNet_v2
+from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
 import tensorflow as tf
 import os
 
@@ -17,12 +17,12 @@ def main():
     epochs = 100
     binary_class = False
     # 文件保存地址信息
-    saveh5 = 'FireNet_v1_on_FireNet.h5'
+    saveh5 = 'ConvNet_on_FireNet.h5'
     output_figure_dir = 'FireNet_dataset_output_figure'
-    loss_fig_name = 'train_FireNet_v1_loss.jpg'
-    accuracy_fig_name = 'train_FireNet_v1_accuracy.jpg'
+    loss_fig_name = 'train_ConvNet_loss.jpg'
+    accuracy_fig_name = 'train_ConvNet_accuracy.jpg'
     # 模型信息
-    selectedmodel = FireNet_v1
+    selectedmodel = ConvNet
     
     # 构造数据集路径
     data_root = os.getcwd()
@@ -37,17 +37,17 @@ def main():
     # 构造用于training和validation的Dataset对象
     train_ds = tf.keras.utils.image_dataset_from_directory(train_data_path,
                                                            label_mode='int',
-                                                           validation_split=0.1, 
+                                                           validation_split=0.2, 
                                                            subset="training", 
-                                                           seed=123,
+                                                           seed=120,
                                                            image_size=(img_height, img_width),
                                                            batch_size=batch_size)
     
     val_ds = tf.keras.utils.image_dataset_from_directory(train_data_path, 
                                                          label_mode='int',
-                                                         validation_split=0.1, 
+                                                         validation_split=0.2, 
                                                          subset="validation", 
-                                                         seed=123,
+                                                         seed=120,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
@@ -68,8 +68,8 @@ def main():
     #         ax = plt.subplot(3, 3, i + 1)
     #         plt.imshow(images[i].numpy().astype("uint8"))
     #         plt.title(class_names[labels[i]])
-    #         plt.axis("off")
-    # plt.show()
+    # plt.savefig("sample_fig.jpg")
+
 
     # # 配置数据集以提高性能
     # AUTOTUNE = tf.data.AUTOTUNE
@@ -82,7 +82,7 @@ def main():
     else:
          num_classes = classes
 
-    model = FireNet_v1(img_height=img_height, img_width=img_width, num_classes=num_classes)
+    model = selectedmodel(img_height=img_height, img_width=img_width, num_classes=num_classes)
 
     # model.build((batch_size, 224, 224, 3))  # when using subclass model
     model.summary()
