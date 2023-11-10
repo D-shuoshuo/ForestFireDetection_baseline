@@ -8,7 +8,7 @@ from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
 
 # 配置信息
 # 数据信息
-img_height = 96
+img_height = 96 # 输入图片大小
 img_width = 96
 dataset = 'ForestFire_dataset'
 batch_size = 32

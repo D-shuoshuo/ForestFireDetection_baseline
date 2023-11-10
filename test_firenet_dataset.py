@@ -8,7 +8,7 @@ from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
 
 # 配置信息
 # 数据信息
-img_height = 96
+img_height = 96 # 输入图片大小
 img_width = 96
 dataset = 'FireNet_dataset'
 batch_size = 32
@@ -16,9 +16,9 @@ classes = 2
 # 测试信息
 binary_class = False
 # 模型信息
-selectedmodel = FireNet_v1
+selectedmodel = ConvNet # 模型修改
 # 文件保存地址信息
-saveh5 = 'FireNet_v1_on_FireNet.h5'
+saveh5 = 'ConvNet_on_FireNet_96.h5' # 模型修改
 
 def main():
     # load image

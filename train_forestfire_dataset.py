@@ -9,7 +9,7 @@ print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 # 配置信息
 # 数据信息
 dataset = 'ForestFire_dataset'
-img_height = 96
+img_height = 96 # 输入图片大小
 img_width = 96
 classes = 2
 # 训练信息
@@ -17,10 +17,10 @@ batch_size = 32
 epochs = 100
 binary_class = False
 # 文件保存地址信息
-saveh5 = 'FireNet_v1_on_ForestFire.h5' # 模型修改
+saveh5 = 'FireNet_v1_on_ForestFire_96.h5' # 模型修改
 output_figure_dir = 'ForestFire_dataset_output_figure'
-loss_fig_name = 'train_FireNet_v1_loss.jpg' # 模型修改
-accuracy_fig_name = 'train_FireNet_v1_accuracy.jpg' # 模型修改
+loss_fig_name = 'train_FireNet_v1_loss_96.jpg' # 模型修改
+accuracy_fig_name = 'train_FireNet_v1_accuracy_96.jpg' # 模型修改
 # 模型信息
 selectedmodel = FireNet_v1 # 模型修改
     

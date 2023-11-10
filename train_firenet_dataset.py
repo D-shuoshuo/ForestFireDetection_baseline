@@ -9,18 +9,18 @@ print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 # 配置信息
 # 数据信息
 dataset = 'FireNet_dataset'
-img_height = 64
-img_width = 64
+img_height = 96 # 输入图片大小
+img_width = 96
 classes = 2
 # 训练信息
 batch_size = 32
 epochs = 100
 binary_class = False
 # 文件保存地址信息
-saveh5 = 'ConvNet_on_FireNet.h5' # 模型修改
+saveh5 = 'ConvNet_on_FireNet_96.h5' # 模型修改
 output_figure_dir = 'FireNet_dataset_output_figure'
-loss_fig_name = 'train_ConvNet_loss.jpg' # 模型修改
-accuracy_fig_name = 'train_ConvNet_accuracy.jpg' # 模型修改
+loss_fig_name = 'train_ConvNet_loss_96.jpg' # 模型修改
+accuracy_fig_name = 'train_ConvNet_accuracy_96.jpg' # 模型修改
 # 模型信息
 selectedmodel = ConvNet # 模型修改
 
@@ -41,7 +41,7 @@ def main():
                                                            label_mode='int',
                                                            validation_split=0.2, 
                                                            subset="training", 
-                                                           seed=120,
+                                                           seed=125,
                                                            image_size=(img_height, img_width),
                                                            batch_size=batch_size)
     
@@ -49,7 +49,7 @@ def main():
                                                          label_mode='int',
                                                          validation_split=0.2, 
                                                          subset="validation", 
-                                                         seed=120,
+                                                         seed=125,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
@@ -64,13 +64,13 @@ def main():
             print(labels_batch.shape)
             break
     
-    # plt.figure(figsize=(10, 10))
-    # for images, labels in train_ds.take(1):
-    #     for i in range(9):
-    #         ax = plt.subplot(3, 3, i + 1)
-    #         plt.imshow(images[i].numpy().astype("uint8"))
-    #         plt.title(class_names[labels[i]])
-    # plt.savefig("sample_fig.jpg")
+    plt.figure(figsize=(10, 10))
+    for images, labels in train_ds.take(1):
+        for i in range(9):
+            ax = plt.subplot(3, 3, i + 1)
+            plt.imshow(images[i].numpy().astype("uint8"))
+            plt.title(class_names[labels[i]])
+    plt.savefig("sample_fig.jpg")
 
 
     # # 配置数据集以提高性能
@@ -94,7 +94,7 @@ def main():
 
     callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+saveh5,
                                                      save_best_only=True,
-                                                     save_weights_only=True,
+                                                     save_weights_only=False,
                                                      monitor='val_loss')]
     
     history = model.fit(x=train_ds,

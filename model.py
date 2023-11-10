@@ -9,7 +9,7 @@ def ConvNet(img_height=96, img_width=96, num_classes=2, steps_per_epoch=100):
         tf.keras.layers.Conv2D(4, 3, strides=(2, 2), activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         tf.keras.layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2)),
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(num_classes)
     ])
 
