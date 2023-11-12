@@ -1,7 +1,9 @@
-import matplotlib.pyplot as plt
-from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
-import tensorflow as tf
 import os
+
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
 
 print(tf.__version__)
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
@@ -9,18 +11,18 @@ print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 # 配置信息
 # 数据信息
 dataset = 'FireNet_dataset'
-img_height = 96 # 输入图片大小
-img_width = 96
+img_height = 64 # 输入图片大小
+img_width = 64
 classes = 2
 # 训练信息
 batch_size = 32
 epochs = 100
 binary_class = False
 # 文件保存地址信息
-saveh5 = 'ConvNet_on_FireNet_96.h5' # 模型修改
+saveh5 = 'ConvNet_on_FireNet_64.h5' # 图片大小与模型修改
 output_figure_dir = 'FireNet_dataset_output_figure'
-loss_fig_name = 'train_ConvNet_loss_96.jpg' # 模型修改
-accuracy_fig_name = 'train_ConvNet_accuracy_96.jpg' # 模型修改
+loss_fig_name = 'train_ConvNet_loss_64.jpg' # 图片大小与模型修改
+accuracy_fig_name = 'train_ConvNet_accuracy_64.jpg' # 图片大小与模型修改
 # 模型信息
 selectedmodel = ConvNet # 模型修改
 
@@ -41,7 +43,7 @@ def main():
                                                            label_mode='int',
                                                            validation_split=0.2, 
                                                            subset="training", 
-                                                           seed=125,
+                                                           seed=111,
                                                            image_size=(img_height, img_width),
                                                            batch_size=batch_size)
     
@@ -49,7 +51,7 @@ def main():
                                                          label_mode='int',
                                                          validation_split=0.2, 
                                                          subset="validation", 
-                                                         seed=125,
+                                                         seed=111,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
@@ -93,7 +95,7 @@ def main():
     model.summary()
 
     callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+saveh5,
-                                                     save_best_only=True,
+                                                     save_best_only=False,
                                                      save_weights_only=False,
                                                      monitor='val_loss')]
     
@@ -105,10 +107,10 @@ def main():
 
     # plot loss and accuracy image
     history_dict = history.history
-    train_loss = history_dict["loss"]
-    train_accuracy = history_dict["accuracy"]
-    val_loss = history_dict["val_loss"]
-    val_accuracy = history_dict["val_accuracy"]
+    train_loss = history_dict['loss']
+    train_accuracy = history_dict['accuracy']
+    val_loss = history_dict['val_loss']
+    val_accuracy = history_dict['val_accuracy']
 
     # loss figure
     plt.figure()
@@ -117,7 +119,7 @@ def main():
     plt.legend()
     plt.xlabel('epochs')
     plt.ylabel('loss')
-    plt.savefig(output_figure_dir + "/" + loss_fig_name)
+    plt.savefig(output_figure_dir + '/' + loss_fig_name)
 
     # accuracy figure
     plt.figure()
@@ -126,69 +128,7 @@ def main():
     plt.legend()
     plt.xlabel('epochs')
     plt.ylabel('accuracy')
-    plt.savefig(output_figure_dir + "/" + accuracy_fig_name)
-
-
-
-
-
-
-
-
-    # # using keras low level api for training
-    # loss_object = tf.keras.losses.CategoricalCrossentropy(from_logits=False)
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0005)
-    #
-    # train_loss = tf.keras.metrics.Mean(name='train_loss')
-    # train_accuracy = tf.keras.metrics.CategoricalAccuracy(name='train_accuracy')
-    #
-    # test_loss = tf.keras.metrics.Mean(name='test_loss')
-    # test_accuracy = tf.keras.metrics.CategoricalAccuracy(name='test_accuracy')
-    #
-    #
-    # @tf.function
-    # def train_step(images, labels):
-    #     with tf.GradientTape() as tape:
-    #         predictions = model(images, training=True)
-    #         loss = loss_object(labels, predictions)
-    #     gradients = tape.gradient(loss, model.trainable_variables)
-    #     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-    #
-    #     train_loss(loss)
-    #     train_accuracy(labels, predictions)
-    #
-    #
-    # @tf.function
-    # def test_step(images, labels):
-    #     predictions = model(images, training=False)
-    #     t_loss = loss_object(labels, predictions)
-    #
-    #     test_loss(t_loss)
-    #     test_accuracy(labels, predictions)
-    #
-    #
-    # best_test_loss = float('inf')
-    # for epoch in range(1, epochs+1):
-    #     train_loss.reset_states()        # clear history info
-    #     train_accuracy.reset_states()    # clear history info
-    #     test_loss.reset_states()         # clear history info
-    #     test_accuracy.reset_states()     # clear history info
-    #     for step in range(total_train // batch_size):
-    #         images, labels = next(train_data_gen)
-    #         train_step(images, labels)
-    #
-    #     for step in range(total_val // batch_size):
-    #         test_images, test_labels = next(val_data_gen)
-    #         test_step(test_images, test_labels)
-    #
-    #     template = 'Epoch {}, Loss: {}, Accuracy: {}, Test Loss: {}, Test Accuracy: {}'
-    #     print(template.format(epoch,
-    #                           train_loss.result(),
-    #                           train_accuracy.result() * 100,
-    #                           test_loss.result(),
-    #                           test_accuracy.result() * 100))
-    #     if test_loss.result() < best_test_loss:
-    #        model.save_weights("./save_weights/myAlex.ckpt", save_format='tf')
+    plt.savefig(output_figure_dir + '/' + accuracy_fig_name)
 
 
 if __name__ == '__main__':
