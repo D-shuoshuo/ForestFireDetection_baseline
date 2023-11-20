@@ -3,45 +3,34 @@ import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from model import ConvNet, FireNet_v1, FireNet_v2, AlexNet_v1
 
-print(tf.__version__)
-print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
-
-# 配置信息
-# 数据信息
-dataset = 'FireNet_dataset'
-img_height = 64 # 输入图片大小
-img_width = 64
+# 数据集信息
 classes = 2
-# 训练信息
-batch_size = 32
-epochs = 100
-binary_class = False
 # 文件保存地址信息
-saveh5 = 'ConvNet_on_FireNet_64.h5' # 图片大小与模型修改
-output_figure_dir = 'FireNet_dataset_output_figure'
-loss_fig_name = 'train_ConvNet_loss_64.jpg' # 图片大小与模型修改
-accuracy_fig_name = 'train_ConvNet_accuracy_64.jpg' # 图片大小与模型修改
-# 模型信息
-selectedmodel = ConvNet # 模型修改
+saveh5 = '_on_FLAME.h5' # 图片大小与模型修改
+output_figure_dir = 'FLAME_output_figure'
 
 
-def main():
+def train_on_FLAME(selectedmodel, 
+                   batch_size=32,  
+                   epochs=100,
+                   validation_split=0.2, 
+                   img_height=224,
+                   img_width=224,
+                   binary_class=False):
     # 构造数据集路径
     data_root = os.getcwd()
-    # data_root = os.path.abspath(os.path.join(os.getcwd(), '..')) 
-    image_path = os.path.join(data_root, "Dataset", dataset) 
-    train_data_path = os.path.join(image_path, "train") 
+    train_data_path = os.path.join(data_root, "Dataset/FLAME/train")
 
-    # 创建save_weights文件夹
-    if not os.path.exists("save_weights"):  
-        os.makedirs("save_weights")
+    # 构造文件存储地址
+    dataset_saveh5 = str(img_height) + "_" + selectedmodel.__name__ + saveh5
+    dataset_loss_fig_name = str(img_height) + "_" + selectedmodel.__name__ + '_loss.jpg'
+    dataset_accuracy_fig_name = str(img_height) + "_" + selectedmodel.__name__ + '_accuracy.jpg'
 
     # 构造用于training和validation的Dataset对象
     train_ds = tf.keras.utils.image_dataset_from_directory(train_data_path,
                                                            label_mode='int',
-                                                           validation_split=0.2, 
+                                                           validation_split=validation_split, 
                                                            subset="training", 
                                                            seed=111,
                                                            image_size=(img_height, img_width),
@@ -49,21 +38,27 @@ def main():
     
     val_ds = tf.keras.utils.image_dataset_from_directory(train_data_path, 
                                                          label_mode='int',
-                                                         validation_split=0.2, 
+                                                         validation_split=validation_split, 
                                                          subset="validation", 
                                                          seed=111,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
     class_names = train_ds.class_names
+    print("="*40)
     print("Classs Names:", class_names)
+    print("="*40)
     
-    num_batches = len(train_ds)  
+    num_batches = len(train_ds)
+    print("="*40) 
     print("Number of batches in the training dataset:", num_batches)
+    print("="*40)
 
     for image_batch, labels_batch in train_ds:
+            print("="*40)
             print(image_batch.shape)
             print(labels_batch.shape)
+            print("="*40)
             break
     
     plt.figure(figsize=(10, 10))
@@ -91,10 +86,9 @@ def main():
                           num_classes=num_classes, 
                           steps_per_epoch=num_batches)
 
-    # model.build((batch_size, 224, 224, 3))  # when using subclass model
     model.summary()
 
-    callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+saveh5,
+    callbacks = [tf.keras.callbacks.ModelCheckpoint(filepath="./save_weights/"+dataset_saveh5,
                                                      save_best_only=False,
                                                      save_weights_only=False,
                                                      monitor='val_loss')]
@@ -119,7 +113,7 @@ def main():
     plt.legend()
     plt.xlabel('epochs')
     plt.ylabel('loss')
-    plt.savefig(output_figure_dir + '/' + loss_fig_name)
+    plt.savefig("figure/" + output_figure_dir + '/' + dataset_loss_fig_name)
 
     # accuracy figure
     plt.figure()
@@ -128,8 +122,5 @@ def main():
     plt.legend()
     plt.xlabel('epochs')
     plt.ylabel('accuracy')
-    plt.savefig(output_figure_dir + '/' + accuracy_fig_name)
+    plt.savefig("figure/" + output_figure_dir + '/' + dataset_accuracy_fig_name)
 
-
-if __name__ == '__main__':
-    main()
