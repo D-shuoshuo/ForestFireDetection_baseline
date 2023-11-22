@@ -32,7 +32,7 @@ def train_on_FireNet_dataset(selectedmodel,
                                                            label_mode='int',
                                                            validation_split=validation_split, 
                                                            subset="training", 
-                                                           seed=111,
+                                                           seed=123,
                                                            image_size=(img_height, img_width),
                                                            batch_size=batch_size)
     
@@ -40,7 +40,7 @@ def train_on_FireNet_dataset(selectedmodel,
                                                          label_mode='int',
                                                          validation_split=validation_split, 
                                                          subset="validation", 
-                                                         seed=111,
+                                                         seed=123,
                                                          image_size=(img_height, img_width),
                                                          batch_size=batch_size)
     # 查看train_ds的信息
