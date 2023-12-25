@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-# 数据信息
-classes = 2
 # 文件保存地址信息
 saveh5 = '_on_ForestFire_dataset.h5' 
 output_figure_dir = 'ForestFire_dataset_output_figure'
@@ -34,8 +32,7 @@ def calculate_classification_metrics(cm):
 def test_on_ForestFire_dataset(selectedmodel,
                             batch_size=32,  
                             img_height=224, 
-                            img_width=224,
-                            binary_class=False):
+                            img_width=224):
     # load image
     # construct the dataset path
     data_root = os.getcwd()
