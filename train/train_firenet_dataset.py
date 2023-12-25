@@ -4,8 +4,6 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-# 数据集信息
-classes = 2
 # 文件保存地址信息
 saveh5 = '_on_FireNet_dataset.h5' # 图片大小与模型修改
 output_figure_dir = 'FireNet_dataset_output_figure'
@@ -17,7 +15,8 @@ def train_on_FireNet_dataset(selectedmodel,
                              validation_split=0.2, 
                              img_height=224,
                              img_width=224,
-                             binary_class=False):
+                             binary_class=False,
+                             classes = 2):
     # 构造数据集路径
     data_root = os.getcwd()
     train_data_path = os.path.join(data_root, "Dataset/FireNet_dataset/train")
@@ -70,11 +69,11 @@ def train_on_FireNet_dataset(selectedmodel,
     plt.savefig("sample_fig.jpg")
 
 
-    # # 配置数据集以提高性能
-    # AUTOTUNE = tf.data.AUTOTUNE
+    # 配置数据集以提高性能
+    AUTOTUNE = tf.data.AUTOTUNE
 
-    # train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
-    # val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
+    train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
+    val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
     if binary_class:
          num_classes = 1
