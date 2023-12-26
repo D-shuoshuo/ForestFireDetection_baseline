@@ -26,7 +26,7 @@ epochs = 100
 binary_class = False
 # 模型信息
 selected_dataset = "FLAME" # FireNet ForestFire FLAME
-target_model = "Tiny_Xception" # ConvNet, FireNet_v1, Tiny_Xception
+target_model = "ConvNet" # ConvNet, FireNet_v1, Tiny_Xception
 
 def main():
     # create a "save_weights" folder
